@@ -816,12 +816,15 @@
     d.lock=d.fpsStats.high.core+d.fpsStats.low.core;
   }
   function dronePosition(t){
-    // Smooth but less predictable jukes: changes of direction, brief accelerations,
-    // and combined vertical/horizontal movement, with no unfair teleportation.
-    const sweep=Math.sin(t*1.67+Math.sin(t*.82)*.67);
-    const juke=Math.sin(t*3.75+Math.sin(t*1.13)*1.25);
-    const drift=Math.sin(t*2.31+Math.sin(t*.93)*.8);
-    const side=Math.sin(t*5.1+Math.sin(t*.53)*.8);
+    // Mobile joystick has a fixed maximum velocity shared with Level 01.
+    // Slow the drone's entire path to 50% speed (including its quick jukes),
+    // keeping the original movement range, target size, and score hitboxes.
+    // This gives joystick players enough time to follow direction changes.
+    const motionTime=t*.50;
+    const sweep=Math.sin(motionTime*1.67+Math.sin(motionTime*.82)*.67);
+    const juke=Math.sin(motionTime*3.75+Math.sin(motionTime*1.13)*1.25);
+    const drift=Math.sin(motionTime*2.31+Math.sin(motionTime*.93)*.8);
+    const side=Math.sin(motionTime*5.1+Math.sin(motionTime*.53)*.8);
     return{x:W*clamp(.51+.22*sweep+.054*juke,.20,.82),
            y:H*clamp(.51+.155*drift+.044*side,.315,.725)};
   }
