@@ -754,7 +754,10 @@
   }
   function fpsJoyMove(e,p){
     const d=stageData;if(d.fpsStickPointer!==e.pointerId)return;
-    const g=fpsJoyGeom();let x=(p.x*W-g.x)/g.r,y=(p.y*H-g.y)/g.r;
+    // Match level 01 joystick sensitivity: full throw requires 0.105 * screen width.
+    // Keep the compact visible control ring for short mobile landscape viewports.
+    const g=fpsJoyGeom(),inputRadius=W*.105;
+    let x=(p.x*W-g.x)/inputRadius,y=(p.y*H-g.y)/inputRadius;
     const mag=Math.hypot(x,y);
     if(mag>1){x/=mag;y/=mag;}
     if(mag<.09){x=0;y=0;}
@@ -779,7 +782,12 @@
     text(c,'方向摇杆 · 控制准星',g.x,g.y-r*1.38,10,'rgba(201,242,250,.90)','center',850);
     c.restore();
   }
-  function fpsRadii(){const u=Math.min(W,H);return {visual:u*.057,core:u*.018,outer:u*.057};}
+  function fpsRadii(){
+    // Make the drone 50% larger while keeping its visible edge and scoring boundary aligned.
+    // Retain the same relative core/edge falloff, so scoring still rewards precise tracking.
+    const u=Math.min(W,H),scale=1.5;
+    return {visual:u*.057*scale,core:u*.018*scale,outer:u*.057*scale};
+  }
   function fpsWeight(dist){const {core,outer}=fpsRadii();if(dist<=core)return 1;if(dist>=outer)return 0;const falloff=(outer-dist)/(outer-core);return Math.pow(falloff,1.45);}
   function fpsStage(){return phase==='low'?'low':'high';}
   function fpsScore(stat){return clamp(Math.round(stat.weighted/ROUND*100),0,100);}
@@ -787,8 +795,11 @@
     const d=stageData,st=d.fpsStats[fpsStage()];
     if(d.fpsStickPointer!==null){
       // Continuous analog movement. Finger stays on the left; the aim stays in the center playfield.
-      d.aim.x=clamp(d.aim.x+d.fpsJoy.x*.82*dt,.10,.91);
-      d.aim.y=clamp(d.aim.y+d.fpsJoy.y*1.17*dt,.25,.83);
+      // Identical physical pixels/second to level 01's MOBA joystick.
+      // Divide by the corresponding viewport dimension to update normalized aim coordinates.
+      const speed=Math.min(W,H)*.48;
+      d.aim.x=clamp(d.aim.x+d.fpsJoy.x*speed*dt/W,.10,.91);
+      d.aim.y=clamp(d.aim.y+d.fpsJoy.y*speed*dt/H,.25,.83);
       lastPaint=0;
     }
     const p=dronePosition(sceneElapsed);
