@@ -1131,7 +1131,7 @@
     // immediately holds the view so the right thumb can concentrate on FIRE.
     const mag=Math.hypot(d.joyX,d.joyY);
     if(mag>.05){
-      const yawSpeed=2.05, pitchSpeed=1.28;
+      const yawSpeed=2.05*.70, pitchSpeed=1.28*.70; // V1.0.8.2: both axes 30% less sensitive.
       d.player.yaw=clamp(d.player.yaw+d.joyX*yawSpeed*dt,-1.25,1.25);
       d.player.pitch=clamp(d.player.pitch-d.joyY*pitchSpeed*dt,-.50,.53);
       lastPaint=0;
@@ -1679,10 +1679,11 @@
     const enough=clicks>=4||picks>=3;
     if(!enough)return {enough:false,grade:'—',name:'待解锁的拾宝潜力',score:null,picks,accuracy,speed,copy:'本轮有效拾取样本不足。再挑战一次，尝试快速定位并连续点击能量核心。'};
     let grade,name,copy;
-    if(score>=90){grade='S';name='光感猎手';copy='你在15秒内完成了50次以上高速拾取，同时维持高命中率和长连击，操作速度与点击节奏十分出色。';}
-    else if(score>=75){grade='A';name='能量追踪者';copy='你的拾取速度和连续点击节奏很不错。冲击 S 级还需要达到至少50个拾取，并兼顾准确率、连击和光追阶段表现。';}
-    else if(score>=55){grade='B';name='遗迹探索者';copy='你已掌握基本的连续拾取节奏，下一步可通过缩短目标切换时间、减少误点来提升操作速度。';}
-    else {grade='C';name='寻光学徒';copy='你正在适应快速拾取的操作节奏。试着缩短两次点击之间的停顿，同时保持准确性。';}
+    const performance=`你在本轮拾取了 ${picks} 个能量核心，命中率 ${accuracy}%，最高连击 ×${d.rayBestCombo||0}。`;
+    if(score>=90){grade='S';name='光感猎手';copy=performance+'连续拾取节奏和操作准确度表现十分出色。';}
+    else if(score>=75){grade='A';name='能量追踪者';copy=performance+'已经展现较快的操作节奏；继续缩短目标切换间隔，还有提升空间。';}
+    else if(score>=55){grade='B';name='遗迹探索者';copy=performance+'下一步可重点减少误点，提升连续拾取的稳定性。';}
+    else {grade='C';name='寻光学徒';copy=performance+'尝试先看准目标再点击，并逐渐加快拾取节奏。';}
     return {enough:true,grade,name,score,picks,accuracy,speed,copy};
   }
   function assessPeekTalent(d,score){
@@ -1746,21 +1747,36 @@
       const lo=stageData.fpsStats.low,hi=stageData.fpsStats.high;
       const score=fpsScore(hi),loScore=fpsScore(lo);
       const corePct=Math.round(hi.core/ROUND*100),insidePct=Math.round(hi.inside/ROUND*100);
+      const pointsDelta=score-loScore, coreDelta=hi.core-lo.core;
+      const pointsChange=pointsDelta>0?`高 ${pointsDelta} 分`:pointsDelta<0?`低 ${-pointsDelta} 分`:'持平';
+      const coreChange=coreDelta>.05?`增加 ${coreDelta.toFixed(1)} 秒`:coreDelta<-.05?`减少 ${Math.abs(coreDelta).toFixed(1)} 秒`:'基本持平';
+      const trackingSummary=(lo.inside+hi.inside)<.08
+        ?'本轮两阶段都未形成持续有效的目标追踪。尝试用左下摇杆把准星保持在目标核心，再比较两阶段成绩。'
+        :`本轮 165FPS 模拟阶段的精准追踪积分较 30FPS 阶段${pointsChange}，核心锁定时长${coreChange}。这是你本轮的操作表现，不能视为真实设备的帧率收益。`;
       const rank=score>=87?'S':score>=70?'A':score>=45?'B':'C';
       const name=score>=87?'超稳准星':score>=70?'精准追踪者':score>=45?'稳定性新星':'跟枪练习生';
       const desc=score>=87?'你能在快速变向中持续把准星留在核心，动态追踪稳定性出色。':score>=70?'你已能在目标移动时保持较长时间有效锁定，尝试减少变向时的短暂脱靶。':score>=45?'你能够跟上部分目标移动，进一步提升变向修正精度会有明显进步。':'本轮准星偏离核心的时间较多，建议尝试小幅、连续地修正准星位置。';
       return `<div class="talent-card"><div class="talent-symbol"><strong>${rank}</strong><small>${score} / 100</small></div><div><div class="talent-eyebrow">你的动态追踪稳定性 · 娱乐性评价</div><div class="talent-name">${name}</div><p class="talent-copy">${desc}</p><div class="talent-metrics"><span class="talent-metric">核心锁定 <b>${hi.core.toFixed(1)}s</b></span><span class="talent-metric">有效范围 <b>${insidePct}%</b></span><span class="talent-metric">核心占比 <b>${corePct}%</b></span></div></div></div>
-      <div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 高低帧率跟枪表现</b><span>同一套加权判定</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>30FPS · 模拟</label><p>精准追踪积分 <b>${loScore}</b> / 100<br>核心锁定 <b>${lo.core.toFixed(1)}s</b></p></div><div class="moba-compare-cell accent"><label>165FPS · 模拟</label><p>精准追踪积分 <b>${score}</b> / 100<br>核心锁定 <b>${hi.core.toFixed(1)}s</b></p></div></div><p class="hint">核心区域获得满权重积分；边缘逐步递减，脱靶为零。两阶段成绩受个人操作和练习影响，不能作为真实设备帧率提升收益的量化结论。</p></div>`;
+      <div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 高低帧率跟枪表现</b><span>同一套加权判定</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>30FPS · 模拟</label><p>精准追踪积分 <b>${loScore}</b> / 100<br>核心锁定 <b>${lo.core.toFixed(1)}s</b></p></div><div class="moba-compare-cell accent"><label>165FPS · 模拟</label><p>精准追踪积分 <b>${score}</b> / 100<br>核心锁定 <b>${hi.core.toFixed(1)}s</b></p></div></div><p class="hint">${trackingSummary}</p></div>`;
     })():'';
     const rayStat=level===3?(()=>{
       const d=stageData,picks=d.found,miss=Math.max(0,d.clicks-picks),acc=d.clicks?Math.round(picks/d.clicks*100):0,speed=(picks/(ROUND*2)).toFixed(1);
       const low=d.rayStats.low,high=d.rayStats.high;
-      return `<div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 光追拾宝表现</b><span>操作速度 + 连击测试</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>本轮表现</label><p>拾取 <b>${picks}</b> 个 · 失误 <b>${miss}</b> 次<br>命中率 <b>${acc}%</b> · 拾取频率 <b>${speed} /s</b><br>最高连击 <b>×${d.rayBestCombo}</b></p></div><div class="moba-compare-cell accent"><label>光追模拟对比</label><p>关闭：拾取 <b>${low.picks}</b> 个 · 最高连击 <b>×${low.bestCombo}</b><br>开启：拾取 <b>${high.picks}</b> 个 · 最高连击 <b>×${high.bestCombo}</b></p></div></div><p class="hint">S 级挑战门槛：15 秒内拾取至少 ${RAY_ELITE.total} 个，命中率 ≥${Math.round(RAY_ELITE.accuracy*100)}%，最高连击 ≥${RAY_ELITE.chain}，且光追开启阶段至少拾取 ${RAY_ELITE.highPhase} 个；综合积分还须 ≥90。误点或连击超时会中断连击。两阶段成绩仅供趣味体验，不代表真实设备性能测量。</p></div>`;
+      const pickDiff=high.picks-low.picks, chainDiff=high.bestCombo-low.bestCombo;
+      const pickupChange=pickDiff>0?`多拾取 ${pickDiff} 个`:pickDiff<0?`少拾取 ${-pickDiff} 个`:'拾取数量相同';
+      const chainChange=chainDiff>0?`多连续命中 ${chainDiff} 次`:chainDiff<0?`少连续命中 ${-chainDiff} 次`:'最高连击相同';
+      const raySummary=d.clicks===0
+        ?'本轮尚未完成拾取。尝试快速识别能量核心并连续点击，提升拾取速度。'
+        :`本轮光追开启阶段比关闭阶段${pickupChange}，${chainChange}；累计拾取 ${picks} 个，整体命中率 ${acc}%。两阶段差异受操作节奏影响，不代表真实设备画质提升幅度。`;
+      return `<div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 光追拾宝表现</b><span>操作速度 + 连击测试</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>本轮表现</label><p>拾取 <b>${picks}</b> 个 · 失误 <b>${miss}</b> 次<br>命中率 <b>${acc}%</b> · 拾取频率 <b>${speed} /s</b><br>最高连击 <b>×${d.rayBestCombo}</b></p></div><div class="moba-compare-cell accent"><label>光追模拟对比</label><p>关闭：拾取 <b>${low.picks}</b> 个 · 最高连击 <b>×${low.bestCombo}</b><br>开启：拾取 <b>${high.picks}</b> 个 · 最高连击 <b>×${high.bestCombo}</b></p></div></div><p class="hint">${raySummary}</p></div>`;
     })():'';
     const reactionStat=level===2?(()=>{
       const d=stageData,accuracy=d.clicks?Math.round(d.found/d.clicks*100):0;
       const avg=d.reactions.length?Math.round(d.reactions.reduce((a,b)=>a+b,0)/d.reactions.length):null;
-      return `<div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 先手反应表现</b><span>目标发现 · 瞄准 · 反击</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>射击表现</label><p>击败 <b>${d.found}</b> 人 · 射击 <b>${d.clicks}</b> 次<br>命中率 <b>${accuracy}%</b></p></div><div class="moba-compare-cell accent"><label>反应表现</label><p>平均反应 <b>${avg===null?'--':avg+' ms'}</b><br>本关成绩 <b>${currentScore} / 100</b></p></div></div><p class="hint">评级综合有效击败、射击命中率与探头后的反应时间，使用本关原有评分规则；模拟体验仅供娱乐，不代表专业竞技能力鉴定。</p></div>`;
+      const reactionSummary=d.clicks===0
+        ?'本轮尚未开火，没有可用于评价命中或反应时间的操作数据。下一轮可先观察敌人探头，再果断射击。'
+        :`本轮共射击 ${d.clicks} 次，击败 ${d.found} 个目标，命中率 ${accuracy}%；${avg===null?'尚无有效反应时间样本':`有效击败后的平均反应时间为 ${avg}ms`}。${d.clicks<3?'当前操作样本较少，建议再尝试几次。':accuracy>=70?'本轮命中较稳定，可继续挑战更快出手。':'建议减少试探射击，尽量瞄准后再开火。'}`;
+      return `<div class="compare-box" style="margin-bottom:9px"><div class="compare-head"><b>◉ 先手反应表现</b><span>目标发现 · 瞄准 · 反击</span></div><div class="moba-compare-grid"><div class="moba-compare-cell"><label>射击表现</label><p>击败 <b>${d.found}</b> 人 · 射击 <b>${d.clicks}</b> 次<br>命中率 <b>${accuracy}%</b></p></div><div class="moba-compare-cell accent"><label>反应表现</label><p>平均反应 <b>${avg===null?'--':avg+' ms'}</b><br>本关成绩 <b>${currentScore} / 100</b></p></div></div><p class="hint">${reactionSummary} 本关成绩仅供娱乐性模拟体验。</p></div>`;
     })():'';
     const summaryClass='summary moba-summary';
     view.innerHTML=`<div class="scrim summary-scrim"><section class="panel ${summaryClass}"><div class="summary-header"><div><div class="eyebrow">MISSION 0${level+1} CLEAR</div><h2>${l.name} · 挑战完成</h2></div><div class="scorecard"><small>${level===0?'本关综合积分':level===1?'精准追踪积分':level===3?'极速拾宝积分':'先手反应积分'}</small><strong>${currentScore}</strong></div></div>
