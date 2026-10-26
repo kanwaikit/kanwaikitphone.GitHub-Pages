@@ -12,7 +12,7 @@
   :root{color-scheme:dark;--yellow:#f7df43;--gold:#fbbd45;--ink:#07090f;--line:rgba(255,255,255,.13);--muted:#a7adba;--panel:rgba(12,17,28,.90);--cyan:#55e1f3;--danger:#fa6678}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
   [hidden]{display:none!important}
-  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:Inter,"HarmonyOS Sans","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:#f6f7fb;touch-action:none}
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:Inter,"HarmonyOS Sans","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:#f6f7fb;touch-action:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   button{font:inherit;cursor:pointer;color:inherit;border:0;touch-action:manipulation}
   button:disabled{opacity:.4;cursor:default}
   #app{position:relative;width:100vw;height:100dvh;min-height:250px;overflow:hidden;isolation:isolate}
@@ -115,6 +115,7 @@
   .chip.selected{border-color:var(--yellow);background:var(--yellow);color:#14161c}
   .hint{font-size:10px;color:#9ca9ba;line-height:1.5;margin:9px 0 0}
   .panel-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .panel-actions button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
   .upgrade{z-index:16;position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle,rgba(252,215,52,.28),rgba(2,6,15,.82) 65%);pointer-events:none}
   .upgrade-content{text-align:center;transform:skew(-4deg);animation:zoomIn .34s ease both}
   .upgrade-content .bolt{font-size:42px;color:var(--yellow);text-shadow:0 0 35px var(--yellow)}
@@ -388,6 +389,56 @@
     .mobile-game-tip{font-size:8px;top:79px}
   }
 
+
+  /* V1.0.6: four pre-game tech briefings. Text panes and footer are independently usable in embedded mobile browsers. */
+  .briefing{position:absolute;z-index:5;inset:59px 0 0;padding:clamp(10px,2vw,22px) 5.6%;display:flex;align-items:center;justify-content:center;touch-action:pan-y;overscroll-behavior:contain}
+  .brief-shell{position:relative;width:min(1100px,100%);height:min(590px,100%);min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;border:1px solid rgba(247,223,67,.36);border-radius:20px;overflow:hidden;background:linear-gradient(128deg,rgba(18,25,41,.985),rgba(5,13,24,.978));box-shadow:0 28px 85px rgba(0,0,0,.58),0 0 60px rgba(247,223,67,.065),inset 0 1px rgba(255,255,255,.075)}
+  .brief-shell:before{content:'';position:absolute;z-index:0;inset:0;pointer-events:none;opacity:.62;background:radial-gradient(circle at 78% 32%,rgba(247,223,67,.09),transparent 37%),repeating-linear-gradient(0deg,transparent 0px,transparent 35px,rgba(106,192,210,.032) 36px),repeating-linear-gradient(90deg,transparent 0px,transparent 35px,rgba(106,192,210,.032) 36px)}
+  .brief-shell:after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,rgba(247,223,67,.1),#f7df43 44%,rgba(97,227,246,.38),transparent);pointer-events:none}
+  .brief-top,.brief-body,.brief-bottom{position:relative;z-index:1}
+  .brief-top{padding:14px clamp(16px,2.4vw,31px);display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.12)}
+  .brief-route{display:flex;align-items:center;gap:12px;min-width:0}.brief-route strong{font-size:12px;letter-spacing:1.4px;color:#f7df43;white-space:nowrap}.brief-route small{font-size:10px;color:#99adbf;letter-spacing:1px;white-space:nowrap}
+  .brief-progress{display:flex;gap:6px;align-items:center}.brief-progress i{display:block;height:5px;width:29px;border-radius:99px;background:rgba(255,255,255,.13)}.brief-progress i.on{background:var(--yellow);box-shadow:0 0 12px rgba(247,223,67,.5)}
+  .brief-body{display:grid;grid-template-columns:minmax(0,1.07fr) minmax(0,.93fr);min-height:0}
+  .brief-main,.brief-side{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(247,223,67,.3) transparent}
+  .brief-main{padding:clamp(16px,2.3vw,31px) clamp(16px,2.7vw,35px)}
+  .brief-mini{font:900 10px ui-monospace,monospace;letter-spacing:2px;color:#65dcea;margin-bottom:7px}
+  .brief-title{margin:0;font-size:clamp(22px,2.9vw,40px);letter-spacing:-.7px;line-height:1.14;font-weight:1000}
+  .brief-tech{font-size:clamp(12px,1.5vw,18px);font-weight:900;color:#f7df43;margin:13px 0 8px}
+  .brief-desc{font-size:clamp(11px,1.05vw,14px);color:#c8d6e5;line-height:1.82;margin:0}.brief-desc b{color:#ffe279;font-weight:950}
+  .brief-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:19px}.brief-stat{border:1px solid rgba(247,223,67,.27);border-radius:10px;background:rgba(247,223,67,.055);padding:12px 14px;min-width:0}.brief-stat strong{font-size:clamp(21px,2.7vw,35px);line-height:1;color:#f7df43;font-weight:1000;white-space:nowrap}.brief-stat small{display:block;margin-top:7px;color:#b8cad6;font-size:10px;line-height:1.3}
+  .brief-stat.third{display:none}
+  .brief-side{position:relative;padding:clamp(15px,2.1vw,26px) clamp(16px,2.5vw,32px);border-left:1px solid rgba(98,201,218,.17);background:linear-gradient(135deg,rgba(21,52,64,.20),rgba(5,12,22,.26))}
+  .brief-comparison-head{font:900 10px ui-monospace,monospace;letter-spacing:1.8px;color:#8de0e6;margin:1px 0 10px}
+  .brief-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .brief-era{padding:13px 12px;border-radius:11px;border:1px solid rgba(255,255,255,.13);background:rgba(10,17,30,.65);min-width:0}
+  .brief-era.is-now{border-color:rgba(247,223,67,.45);background:linear-gradient(130deg,rgba(247,223,67,.1),rgba(10,17,30,.75))}
+  .brief-era .era-tag{font-size:10px;font-weight:900;letter-spacing:1px;color:#99a9bc;margin-bottom:8px}.brief-era.is-now .era-tag{color:#f7df43}
+  .brief-era p{margin:0;font-size:clamp(10px,1vw,13px);line-height:1.65;color:#c6d1df}.brief-era.is-now p{color:#f2f2e6}
+  .brief-payoff{padding:13px 15px;border-radius:10px;background:rgba(58,129,146,.1);border:1px solid rgba(117,219,226,.23);margin-top:13px}
+  .brief-payoff b{display:block;color:#7ddfe4;font-size:11px;letter-spacing:.5px;margin-bottom:5px}
+  .brief-payoff p{color:#d9e8f0;font-size:clamp(10px,1.1vw,13px);line-height:1.55;margin:0}
+  .brief-challenge{font-size:clamp(11px,1.08vw,13px);line-height:1.6;font-weight:850;margin-top:14px;color:#f8e69a}.brief-challenge span{color:#b1c1cc;font-weight:700}
+  .brief-bottom{padding:12px clamp(16px,2.4vw,31px);border-top:1px solid rgba(255,255,255,.12);display:flex;gap:16px;align-items:center;justify-content:space-between;background:rgba(1,6,14,.46)}
+  .brief-note{max-width:67%;font-size:10px;color:#9caebc;line-height:1.45}.brief-bottom .action-btn{min-height:40px;padding:10px 20px;flex-shrink:0}
+  .briefing .brief-keyline{height:2px;width:44px;background:linear-gradient(90deg,var(--yellow),transparent);margin:12px 0 14px}
+  @media (orientation:landscape) and (max-width:1180px) and (pointer:coarse){
+    .briefing{inset:40px 0 0;padding:7px calc(8px + env(safe-area-inset-right)) 7px calc(8px + env(safe-area-inset-left))}
+    .brief-shell{height:100%;border-radius:11px}
+    .brief-top{padding:6px 12px}.brief-route{gap:7px}.brief-route strong{font-size:10px}.brief-route small{font-size:8px}.brief-progress i{width:18px;height:4px}
+    .brief-body{grid-template-columns:52% 48%}.brief-main,.brief-side{padding:10px 13px}
+    .brief-mini{font-size:8px;letter-spacing:1px;margin-bottom:4px}.brief-title{font-size:clamp(16px,2.8vw,26px)}.brief-tech{font-size:clamp(10px,1.6vw,13px);margin:7px 0 5px}
+    .brief-desc{font-size:clamp(9px,1.35vw,11px);line-height:1.48}.brief-stats{gap:5px;margin-top:9px}.brief-stat{padding:7px 9px;border-radius:7px}.brief-stat strong{font-size:clamp(17px,2.3vw,25px)}.brief-stat small{font-size:8px;margin-top:4px}
+    .brief-comparison-head{font-size:8px;margin-bottom:5px}.brief-compare{gap:5px}.brief-era{padding:8px 9px;border-radius:7px}.brief-era .era-tag{font-size:8px;margin-bottom:4px}.brief-era p{font-size:clamp(9px,1.25vw,10px);line-height:1.45}
+    .brief-payoff{padding:7px 9px;margin-top:7px}.brief-payoff b{font-size:9px;margin-bottom:3px}.brief-payoff p{font-size:9px;line-height:1.4}.brief-challenge{font-size:9px;margin-top:7px}
+    .briefing .brief-keyline{margin:8px 0}
+    .brief-bottom{padding:5px 12px;min-height:43px;gap:8px}.brief-note{font-size:8px;line-height:1.25}.brief-bottom .action-btn{padding:7px 13px;min-height:31px;font-size:10px}
+  }
+  @media (orientation:landscape) and (max-height:280px) and (max-width:1180px){
+    .briefing{padding-top:3px;padding-bottom:3px}.brief-top{padding-top:4px;padding-bottom:4px}.brief-main,.brief-side{padding:7px 10px}.brief-bottom{min-height:38px;padding:3px 11px}.brief-bottom .action-btn{min-height:29px}.brief-progress i{width:14px}.brief-tech{margin:4px 0}.brief-main .brief-keyline{display:none}
+  }
+  @media (orientation:portrait){.briefing{display:none}}
+
 </style>
 </head>
 <body>
@@ -396,7 +447,7 @@
   <div class="vignette" id="vignette"></div><div class="grid-overlay"></div><div class="grain"></div>
   <header class="topbar">
     <div class="brand"><div class="logo">iQ<span>OO</span></div><div class="brand-divider"></div><div class="brand-copy"><b>ACE LAB</b><small>电竞天赋实验室</small></div></div>
-    <div class="top-actions"><span class="version">iQOO 16 · CONCEPT EXPERIENCE · V1.0 MOBILE</span><button class="ghost-btn" id="topHome" hidden>返回首页</button><button class="ghost-btn mobile-fs" id="mobileFullscreen" type="button" aria-label="尝试全屏">⛶ 全屏</button><button class="ghost-btn primary-outline" id="demoOpen">◈ 汇报演示台</button></div>
+    <div class="top-actions"><span class="version">iQOO 16 · CONCEPT EXPERIENCE · V1.0.6</span><button class="ghost-btn" id="topHome" hidden>返回首页</button><button class="ghost-btn mobile-fs" id="mobileFullscreen" type="button" aria-label="尝试全屏">⛶ 全屏</button><button class="ghost-btn primary-outline" id="demoOpen">◈ 汇报演示台</button></div>
   </header>
   <main id="view"></main><div id="fullscreenNotice" class="fullscreen-notice" role="status" hidden></div>
   <div id="upgrade" class="upgrade" hidden><div class="upgrade-content"><div class="bolt">ϟ</div><h2>PERFORMANCE UNLOCKED</h2><p id="upgradeText">极限性能 · 现已解锁</p></div></div>
@@ -428,8 +479,8 @@
   const LEVELS=[
     {name:'极限走位',genre:'MOBA · 弹道闪避挑战',tech:'自研 Q-Flex 低时延操控',values:['常规触控','Q-Flex 低时延'],low:'常规触控',high:'Q-Flex 低时延',prompt:'左下摇杆或拖拽移动，观察技能预警并瞬间变向闪避',desc:'Q-Flex 自研操控技术优化游戏触控链路，让走位与转向更跟手。这一关通过两种输入延迟的放大模拟，体验预判敌方非指向性技能与及时闪避的差异。'},
     {name:'精准锁敌',genre:'FPS · 精密跟枪',tech:'超帧超分+超感陀螺仪',values:['30FPS','60FPS','120FPS','165FPS'],low:'30FPS',high:'165FPS',prompt:'手机：左下方向摇杆控制准星跟随目标；电脑：鼠标直接跟枪 · 越靠近靶心积分越高',desc:'跟枪越贴近目标核心，追踪积分越高；目标边缘得分逐渐衰减，脱离目标不计分。高帧率效果采用概念模拟，帮助观察运动画面的连贯程度。'},
-    {name:'先手反应',genre:'FPS · 赛博巷战',tech:'165Hz 高刷响应',values:['60Hz','90Hz','120Hz','165Hz'],low:'60Hz',high:'165Hz',prompt:'左下摇杆移动，右侧上下/左右滑动调整视角，右下开火，击败掩体后探出的敌人',desc:'在第一视角巷战中，高刷新率可让探头的敌人更早进入可见画面。这里放大差异进行概念演示，用来说明先手发现与反打速度的差别。'},
-    {name:'光影寻踪',genre:'开放世界 · 赛博拾宝',tech:'4K全场景光线追踪',values:['光追关闭','光追开启'],low:'光追关闭',high:'光追开启',prompt:'15秒极限拾宝 · 目标50个能量核心，兼顾准确度与连续连击',desc:'在赛博遗迹中搜寻并拾取能量核心，考验你的手眼协调和手速。开启光追后，背景反射、阴影与高光更完整，宝物会与环境形成更清晰的层次区分。'}
+    {name:'先手反应',genre:'FPS · 赛博巷战',tech:'165Hz 高刷响应',values:['60Hz','90Hz','120Hz','165Hz'],low:'60Hz',high:'165Hz',prompt:'左下摇杆转动第一人称视角，右下开火；双指配合瞄准并击败探头敌人',desc:'在第一视角巷战中，高刷新率可让探头的敌人更早进入可见画面。这里放大差异进行概念演示，用来说明先手发现与反打速度的差别。'},
+    {name:'光影寻踪',genre:'开放世界 · 赛博拾宝',tech:'全场景光线追踪',values:['光追关闭','光追开启'],low:'光追关闭',high:'光追开启',prompt:'15秒极限拾宝 · 目标50个能量核心，兼顾准确度与连续连击',desc:'在赛博遗迹中搜寻并拾取能量核心，考验你的手眼协调和手速。开启光追后，背景反射、阴影与高光更完整，宝物会与环境形成更清晰的层次区分。'}
   ];
   const palette={a:'#f7df43',cyan:'#5cecff',pink:'#fc657d',blue:'#5f94fc'};
   function clamp(x,min,max){return Math.max(min,Math.min(max,x));}
@@ -466,10 +517,56 @@
     peekAge:0,peekCount:0,peekLane:1,peekHit:false,reactions:[],lastReaction:null,hitFlash:0,
     fpsFxZone:'idle',fpsAcquirePulse:0,fpsLostPulse:0,fpsStablePulse:0,fpsStableShown:false,fpsStats:{low:{weighted:0,inside:0,core:0,tracking:0,bestCore:0,streak:0},high:{weighted:0,inside:0,core:0,tracking:0,bestCore:0,streak:0}},fpsCurrentAccuracy:0,
     mobaTime:0,mobaNext:.75,mobaWave:0,mobaQueue:[],mobaJoyPointer:null,mobaJoystick:{x:0,y:0},mobaDir:{x:0,y:0},mobaVelocity:{x:0,y:0},mobaGhost:{x:.50,y:.52},mobaMove:0,mobaTrail:[],mobaNear:0,mobaHitFlash:0,mobaPrompt:null,mobaShow:0,mobaImpactPulse:0,mobaNearPulse:0,mobaImpactAngle:0,mobaFxX:.5,mobaFxY:.52,mobaStats:{low:{dodge:0,hit:0,near:0,gapTotal:0,gapCount:0,maxGap:0,move:0},high:{dodge:0,hit:0,near:0,gapTotal:0,gapCount:0,maxGap:0,move:0}},
-    player:{x:0,z:0,yaw:0,pitch:0},joyX:0,joyY:0,joyPointer:null,lookPointer:null,lookX:0,lookY:0,firePointer:null,fireCooldown:0,firePulse:0,peekCover:0,peekSide:1,hitMarker:0,missMarker:0,killAnim:null,shotTrail:0,combo:0,peekAlert:0,peekAlertSeen:false,peekShotFx:0,peekLastShotHit:false,peekShotSeq:0,
+    player:{x:0,z:0,yaw:0,pitch:0},joyX:0,joyY:0,joyPointer:null,firePointer:null,fireCooldown:0,firePulse:0,peekCover:0,peekSide:1,hitMarker:0,missMarker:0,killAnim:null,shotTrail:0,combo:0,peekAlert:0,peekAlertSeen:false,peekShotFx:0,peekLastShotHit:false,peekShotSeq:0,
     rayCombo:0,rayBestCombo:0,rayLastPickAt:-99,rayParticles:[],rayRings:[],rayPopups:[],rayFlash:0,rayShake:0,rayChainToast:null,rayMissFlash:0,
     rayStats:{low:{picks:0,miss:0,bestCombo:0},high:{picks:0,miss:0,bestCombo:0}},
     flashX:.5,flashY:.5};sceneElapsed=0;lastPaint=0;}
+  const TECH_BRIEFS=[
+    {
+      title:'快人一步，躲开致命一击',tech:'Q-flex 自研操控技术',code:'Q-FLEX // INPUT RESPONSE',button:'开始走位挑战 →',
+      desc:'iQOO 16 全新 <b>Q-flex 操控技术</b>，深入游戏引擎层，优化触控全链路 <b>6 个环节</b>。测试场景下，<b>滑动响应时延降低约 28.4%，低至 33.56ms</b>，让走位、急停和技能闪避更加跟手。',
+      stats:[['28.4%','测试场景下滑动响应时延降低约'],['33.56ms','测试场景下滑动响应时延低至']],
+      before:'操作指令经过多环节传递，触控和画面反馈之间可能存在等待时延，影响关键时刻的急停与变向。',
+      now:'Q-flex 从触控采集到画面显示进行全链路优化，减少等待时延，让操作更跟手、极限走位更加及时。',
+      gain:'指令响应更及时，快速变向和危险技能闪避更跟手。',
+      challenge:'预判敌方技能，完成极限闪避！',
+      foot:'时延数据来自特定测试场景参考值；本 H5 仅模拟两档响应差异，并非真实手机硬件测试。'
+    },
+    {
+      title:'稳住准星，锁定每一次胜机',tech:'超感陀螺仪 × 超帧超分',code:'GYROSCOPE // AIM CONTROL',button:'开始跟枪挑战 →',
+      desc:'iQOO 16 搭载新一代<b>超感陀螺仪</b>，至高 <b>500Hz 采样率</b>，配合 Q-flex 与防漂移优化，让转动瞄准更快、更准、更稳。同时，自研电竞芯片 Q4 支持 <b>2K + 165FPS 超分超帧并发</b>，让目标运动更加清晰、连贯。',
+      stats:[['500Hz','至高陀螺仪采样率'],['2K · 165FPS','超分超帧并发 · 适配游戏']],
+      before:'转动跟枪可能受到输入延迟、陀螺仪漂移和画面流畅度的影响。',
+      now:'高精度陀螺仪与操控、画质协同优化，帮助玩家更稳定地追踪移动目标。',
+      gain:'提升动态追踪的控制精度与连贯性，让准星更容易跟随快速变向的目标。',
+      challenge:'稳住准星，持续锁定目标核心！',
+      foot:'本关手机端使用左下虚拟摇杆模拟跟枪，并未读取手机陀螺仪。画质帧率为概念模拟，功能依游戏适配而异。'
+    },
+    {
+      title:'先看清，才能先出手',tech:'三星 M16 · 2K 165Hz 珠峰屏',code:'DISPLAY // HIGH REFRESH',button:'开始反应挑战 →',
+      desc:'iQOO 16 与三星显示联合研发 <b>2K 165Hz 珠峰屏</b>，采用三星 <b>M16 发光材料</b>和 <b>2K LEAD™ 2.0 技术</b>，带来更加流畅、清晰的游戏画面。',
+      stats:[['144Hz','iQOO 15 屏幕刷新率'],['165Hz','iQOO 16 屏幕刷新率']],
+      before:'相较 165Hz，上一代 144Hz 屏幕每秒呈现的画面次数更少，高速运动场景的视觉连续性存在提升空间。',
+      now:'165Hz 高刷新率配合拖影优化，使运动画面更连贯、拖影更少，帮助玩家更及时地发现目标并反击。',
+      gain:'提高高速场景的视觉流畅度，为及时发现目标、抢占出手先机提供支持。',
+      challenge:'抢占先机，发现敌人并快速击败！',
+      foot:'165Hz 为屏幕刷新率上限，与游戏实际输出帧率不同；本关场景差异为模拟示意。'
+    },
+    {
+      title:'让真实光影，照进游戏世界',tech:'全场景光线追踪 × 旗舰显示技术',code:'RAYTRACING // TRUE VISUALS',button:'开始寻宝挑战 →',
+      desc:'iQOO 16 搭载<b>自研全场景光线追踪技术</b>，支持虚拟点光源与 HDR 效果。配合三星 M16 旗舰屏幕、<b>2800nits 全局峰值亮度</b>及<b>912 万颗子像素逐屏校准</b>，让游戏画面的光影、反射、色彩和细节更加真实、生动。',
+      stats:[['2800nits','全局峰值亮度'],['912 万','子像素逐屏校准']],
+      before:'传统游戏渲染更多依赖预设光照，动态反射、阴影及明暗过渡的真实感有限，画面层次相对单一。',
+      now:'全场景光追带来更自然的光影变化、更真实的反射和阴影；旗舰屏幕进一步呈现丰富的色彩与明暗细节，让游戏世界更加鲜活、沉浸。',
+      gain:'光线、材质、反射与暗部细节更有层次，让每一次游戏探索都更具临场感。',
+      challenge:'进入赛博遗迹，在限定时间内尽可能多地拾取能量核心！',
+      foot:'本关光追和屏幕显示差异均为 H5 概念视觉演示，不是实际光线追踪渲染或屏幕亮度测量。'
+    }
+  ];
+  function initBriefing(idx){
+    level=idx;phase='low';comparison=false;paused=false;phaseElapsed=0;upElapsed=0;currentScore=null;
+    initData();$('#upgrade').hidden=true;screen='briefing';lastPaint=0;renderUI();
+  }
   function initLevel(idx){level=idx;phase='low';comparison=false;paused=false;phaseElapsed=0;upElapsed=0;currentScore=null;initData();if(level===0)mobaResetRound();$('#upgrade').hidden=true;screen='play';renderUI();}
   function currentValue(){return LEVELS[level].values.find(v=>v===stageData.manual)|| (phase==='low'?LEVELS[level].low:LEVELS[level].high)}
   function isHigh(){let v=currentValue();return v===LEVELS[level].high || (level===3&&v==='光追开启')}
@@ -653,8 +750,9 @@
       glow(c,x,y,46,e.color,.13);circle(c,x,y,20,'rgba(12,21,33,.95)');strokeCircle(c,x,y,22,e.color,1.5);drawTower(c,x,y,e.color);
       text(c,'敌方施法点',x,y+38,9,'rgba(236,193,211,.5)','center',700);
     }
-    text(c,'Q-FLEX // SKILLSHOT DODGE',W*.5,H*.205,11,'rgba(210,247,231,.5)','center',900);
-    text(c,'MOBA 中路模拟 · 草丛 / 兵线 / 非指向性技能',W*.51,H*.845,10,'rgba(192,236,219,.34)','center',700);
+    // Minimal in-game map caption. Avoid overlaying the actual combat playfield.
+    text(c,'MOBA 中路模拟',W*.5,H*.84,11,'rgba(208,244,233,.66)','center',750);
+    text(c,isHigh()?'Q-FLEX 低时延':'常规触控',W*.5,H*.885,11,isHigh()?'rgba(247,223,67,.90)':'rgba(202,233,225,.76)','center',850);
   }
   function mobaWarnSkill(c,w,t){
     const progress=clamp(w.age/w.warn,0,1),alpha=.16+.24*progress,ox=w.origin.x,oy=w.origin.y;
@@ -874,10 +972,10 @@
   }
   function dronePosition(t){
     // Mobile joystick has a fixed maximum velocity shared with Level 01.
-    // Slow the drone's entire path to 35% of the original speed (30% slower than v1.0.3),
+    // Raise previous version's drone motion speed by 10%, without changing movement range or scoring.
     // keeping the original movement range, target size, and score hitboxes.
     // This gives joystick players enough time to follow direction changes.
-    const motionTime=t*.35;
+    const motionTime=t*.385;
     const sweep=Math.sin(motionTime*1.67+Math.sin(motionTime*.82)*.67);
     const juke=Math.sin(motionTime*3.75+Math.sin(motionTime*1.13)*1.25);
     const drift=Math.sin(motionTime*2.31+Math.sin(motionTime*.93)*.8);
@@ -1027,12 +1125,17 @@
     }
     d.fireCooldown=Math.max(0,d.fireCooldown-dt);d.firePulse=Math.max(0,d.firePulse-dt);d.shotTrail=Math.max(0,d.shotTrail-dt);
     if(d.killAnim)d.killAnim.life+=dt;
+    // Two-thumb FPS operation: left analog stick ROTATES the first-person camera.
+    // Horizontal = yaw, vertical = pitch. The avatar position no longer moves.
+    // These are smooth angular velocities (radians / second); releasing the stick
+    // immediately holds the view so the right thumb can concentrate on FIRE.
     const mag=Math.hypot(d.joyX,d.joyY);
-    if(mag>.05){const speed=2.65;const strafe=d.joyX,forward=-d.joyY,yaw=d.player.yaw;
-      d.player.x+=(Math.cos(yaw)*strafe+Math.sin(yaw)*forward)*dt*speed;
-      d.player.z+=(Math.cos(yaw)*forward-Math.sin(yaw)*strafe)*dt*speed;
+    if(mag>.05){
+      const yawSpeed=2.05, pitchSpeed=1.28;
+      d.player.yaw=clamp(d.player.yaw+d.joyX*yawSpeed*dt,-1.25,1.25);
+      d.player.pitch=clamp(d.player.pitch-d.joyY*pitchSpeed*dt,-.50,.53);
+      lastPaint=0;
     }
-    d.player.x=clamp(d.player.x,-2.75,2.75);d.player.z=clamp(d.player.z,-.35,3.1);
     if(d.firePointer!==null&&d.fireCooldown<=0)peekShoot();
     if(d.peekAge>=2.05){d.peekAge=0;d.peekCount++;d.peekAlertSeen=false;d.peekAlert=0;pickPeekEnemy();d.killAnim=null;}
   }
@@ -1060,8 +1163,8 @@
     const fx=W*.87,fy=H*.77,fr=Math.min(W,H)*.082;
     const kx=jx+stageData.joyX*jr*.48,ky=jy+stageData.joyY*jr*.48;
     strokeCircle(c,jx,jy,jr,'rgba(125,210,240,.38)',3);strokeCircle(c,jx,jy,jr*.56,'rgba(125,210,240,.16)',2);circle(c,kx,ky,jr*.34,'rgba(94,226,255,.17)');strokeCircle(c,kx,ky,jr*.34,'rgba(94,226,255,.92)',2);
-    text(c,'MOVE',jx,jy-jr-12,10,'rgba(184,232,245,.70)','center',800);
-    glow(c,fx,fy,fr*1.25,d.firePulse>0?'#ffd84f':'#ff8c5a',.16+.25*d.firePulse);circle(c,fx,fy,fr,'rgba(255,140,90,.16)');strokeCircle(c,fx,fy,fr,'rgba(255,154,115,.95)',3);text(c,'FIRE',fx,fy+4,14,'#fff2de','center',900);text(c,'SWIPE TO AIM',W*.80,H*.18,10,'rgba(193,225,244,.48)','center',800);
+    text(c,'视角',jx,jy-jr-12,10,'rgba(184,232,245,.78)','center',800);
+    glow(c,fx,fy,fr*1.25,d.firePulse>0?'#ffd84f':'#ff8c5a',.16+.25*d.firePulse);circle(c,fx,fy,fr,'rgba(255,140,90,.16)');strokeCircle(c,fx,fy,fr,'rgba(255,154,115,.95)',3);text(c,'FIRE',fx,fy+4,14,'#fff2de','center',900);
     c.restore();
   }
   function drawCyberArchitecture(c,t,player,vanish,horizon){
@@ -1466,11 +1569,10 @@
     drawRayPickupFeedback(c,t);
     // labels
     text(c,'CYBER RELIC // TREASURE RUSH',W*.5,H*.16,12,'rgba(242,247,250,.84)','center',900);
-    text(c,high?'光追开启：高光/反射让能量核心更清晰':'光追关闭：宝物更容易与环境混在一起',W*.5,H*.20,10,high?'rgba(247,223,67,.82)':'rgba(177,189,205,.70)','center',800);
     if(high)text(c,'PICKUP TARGETS',W*.82,H*.24,10,'rgba(255,226,154,.65)','center',800);
     c.restore();
   }
-  function renderScene(c,t){if(screen==='home'){drawHome(c,t);return}if(screen==='end'){drawHome(c,t+3);return}if(level===0)renderMoba(c,t);if(level===1)renderFps(c,t);if(level===2)renderPeek(c,t);if(level===3)renderRay(c,t);}
+  function renderScene(c,t){if(screen==='home'){drawHome(c,t);return}if(screen==='briefing'){drawHome(c,t+level*2);return}if(screen==='end'){drawHome(c,t+3);return}if(level===0)renderMoba(c,t);if(level===1)renderFps(c,t);if(level===2)renderPeek(c,t);if(level===3)renderRay(c,t);}
   function renderFrame(ts){const canSkip=(screen==='play'||screen==='summary')&&phase==='low'&&!paused&&!((level===0&&(stageData.mobaImpactPulse>0||stageData.mobaNearPulse>0))||(level===1&&(stageData.fpsAcquirePulse>0||stageData.fpsLostPulse>0||stageData.fpsStablePulse>0))||(level===2&&(stageData.peekAlert>0||stageData.peekShotFx>0)));let interval=0;if(canSkip){interval=level===1?80:level===2?65:0;}if(!lastPaint||ts-lastPaint>=interval||!canSkip){lctx.clearRect(0,0,W,H);renderScene(lctx,screen==='play'||screen==='summary'?sceneElapsed:ambient);lastPaint=ts;}ctx.clearRect(0,0,W,H);ctx.drawImage(layer,0,0,W,H);}
   function gameUpdate(dt){if(screen!=='play'||paused)return;if(phase==='upgrade'){upElapsed+=dt;if(upElapsed>=UPGRADE){phase='high';phaseElapsed=0;if(level===0)mobaResetRound(true);if(level===3){stageData.rayCombo=0;stageData.rayLastPickAt=-99;stageData.rayChainToast=null;stageData.rayParticles=[];stageData.rayRings=[];stageData.rayPopups=[];}delete stageData.manual;$('#upgrade').hidden=true;lastPaint=0;syncHUD();}return}sceneElapsed+=dt;phaseElapsed+=dt;if(level===0)updateMoba(dt);if(level===1)updateFps(dt);if(level===2)updatePeek(dt);if(level===3)updateRayFeedback(dt);if(phaseElapsed>=ROUND){if(phase==='low'){phase='upgrade';phaseElapsed=0;upElapsed=0;$('#upgrade').hidden=false;$('#upgradeText').textContent=`${LEVELS[level].high} · 极限性能解锁`; }else{finishLevel();}syncHUD();}}
   function loop(ts){const dt=Math.min(.05,(ts-lastFrame)/1000||.016);lastFrame=ts;ambient+=dt;frame++;if(screen==='summary'&&!paused)sceneElapsed+=dt*1.2;gameUpdate(dt);renderFrame(ts);if(ts-lastHUD>85){syncHUD();lastHUD=ts}requestAnimationFrame(loop)}requestAnimationFrame(loop);
@@ -1508,6 +1610,35 @@
   function endScreen(sample=false){screen='end';sampleReport=sample;comparison=false;paused=false;renderUI();}
   function home(){screen='home';comparison=false;paused=false;sampleReport=false;$('#upgrade').hidden=true;renderUI();}
   function btn(text,id,extra=''){return `<button class="${extra||'ghost-btn'}" id="${id}">${text}</button>`}
+  // WebKit / in-app browser fix: the primary summary CTA may be inside a
+  // momentum-scrolling card. Handle a completed touch directly, with a click
+  // fallback and one-shot guard so synthetic follow-up clicks cannot skip a page.
+  function bindReliableSummaryNext(){
+    const button=$('#next');
+    if(!button)return;
+    let start=null,activated=false;
+    const navigate=(event)=>{
+      if(activated||screen!=='summary'||!button.isConnected)return;
+      activated=true;
+      if(event&&event.type!=='click'&&event.cancelable)event.preventDefault();
+      const destination=level+1;
+      if(destination>=LEVELS.length)endScreen();
+      else initBriefing(destination);
+    };
+    button.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='touch'||event.pointerType==='pen')
+        start={id:event.pointerId,x:event.clientX,y:event.clientY};
+    },{passive:true});
+    button.addEventListener('pointerup',event=>{
+      if(!start||start.id!==event.pointerId)return;
+      const delta=Math.hypot(event.clientX-start.x,event.clientY-start.y);
+      start=null;
+      if(delta<=18)navigate(event);
+    },{passive:false});
+    button.addEventListener('pointercancel',()=>{start=null;});
+    button.addEventListener('click',navigate);
+  }
+
   function assessMobaTalent(d){
     const h=d.mobaStats.high;
     const total=h.dodge+h.hit;
@@ -1569,10 +1700,27 @@
     return {grade,score,name:ranks[grade].name,copy:ranks[grade].copy,hit,shots,accuracy,avg};
   }
   function renderUI(){const view=$('#view');$('#vignette').classList.toggle('game',screen==='play');$('#app').classList.toggle('playing',screen==='play');$('#app').classList.toggle('phone-fps',screen==='play'&&level===1);$('#topHome').hidden=screen==='home';if(screen==='home'){
-    view.innerHTML=`<section class="home"><div class="home-left"><div class="eyebrow">iQOO 16 // PLAYER POTENTIAL PROTOCOL</div><h1><span class="title-main">iQOO电竞天赋</span><em>实验室</em></h1><p>天赋决定你的上限，装备释放你的潜能。<br>突破四重关卡，解锁你的电竞能力图谱。</p><div class="home-buttons">${btn('开始电竞挑战  ↗','start','action-btn')}</div><div class="home-features"><span class="pill">◈ 4 大挑战</span><span class="pill">ϟ 约 60 秒</span><span class="pill">⌾ MOBA × FPS × 开放世界</span></div></div><div class="home-right"><div class="mission-head"><b>CHALLENGE MAP</b></div><div class="mission-list">${LEVELS.map((l,i)=>`<div class="mission"><span class="n">0${i+1} / ${i===0?'Q-FLEX':i===1?'TRACK':i===2?'REACTION':'RAYTRACE'}</span><strong>${l.name}</strong><small>${l.tech}</small></div>`).join('')}</div></div><div class="home-foot">BUILT FOR THE NEXT GENERATION OF MOBILE GAMING 　/　 画面效果为可控模拟</div></section>`;
-    $('#start').onclick=()=>{results=[null,null,null,null];demo=false;initLevel(0);requestImmersive()};
+    view.innerHTML=`<section class="home"><div class="home-left"><div class="eyebrow">iQOO 16 // PLAYER POTENTIAL PROTOCOL</div><h1><span class="title-main">iQOO电竞天赋</span><em>实验室</em></h1><p>天赋决定你的上限，装备释放你的潜能。<br>突破四重关卡，解锁你的电竞能力图谱。</p><div class="home-buttons">${btn('开始电竞挑战  ↗','start','action-btn')}</div><div class="home-features"><span class="pill">◈ 4 大挑战</span><span class="pill">ϟ 约 60 秒游戏挑战</span><span class="pill">⌾ MOBA × FPS × 开放世界</span></div></div><div class="home-right"><div class="mission-head"><b>CHALLENGE MAP</b></div><div class="mission-list">${LEVELS.map((l,i)=>`<div class="mission"><span class="n">0${i+1} / ${i===0?'Q-FLEX':i===1?'TRACK':i===2?'REACTION':'RAYTRACE'}</span><strong>${l.name}</strong><small>${l.tech}</small></div>`).join('')}</div></div><div class="home-foot">BUILT FOR THE NEXT GENERATION OF MOBILE GAMING 　/　 画面效果为可控模拟</div></section>`;
+    $('#start').onclick=()=>{results=[null,null,null,null];demo=false;initBriefing(0);requestImmersive()};
+  }else if(screen==='briefing'){
+    const b=TECH_BRIEFS[level],l=LEVELS[level];
+    view.innerHTML=`<section class="briefing" aria-label="第 ${level+1} 关技术介绍">
+      <article class="brief-shell">
+        <div class="brief-top"><div class="brief-route"><strong>TECH BRIEFING / 0${level+1}</strong><small>${l.name} · 技术介绍</small></div><div class="brief-progress" aria-label="第${level+1}关，共4关">${LEVELS.map((_,i)=>`<i class="${i===level?'on':''}"></i>`).join('')}</div></div>
+        <div class="brief-body">
+          <div class="brief-main"><div class="brief-mini">iQOO 16 // ${b.code}</div><h2 class="brief-title" id="briefTitle">${b.title}</h2><div class="brief-keyline"></div><div class="brief-tech">${b.tech}</div><p class="brief-desc">${b.desc}</p>
+            <div class="brief-stats">${b.stats.map(([v,k])=>`<div class="brief-stat"><strong>${v}</strong><small>${k}</small></div>`).join('')}</div>
+          </div>
+          <div class="brief-side"><div class="brief-comparison-head">BEFORE / NOW · 技术带来什么改变</div><div class="brief-compare"><div class="brief-era"><div class="era-tag">从前 · BEFORE</div><p>${b.before}</p></div><div class="brief-era is-now"><div class="era-tag">现在 · iQOO 16</div><p>${b.now}</p></div></div>
+            <div class="brief-payoff"><b>ϟ 玩家收益 · PLAYER ADVANTAGE</b><p>${b.gain}</p></div>
+            <div class="brief-challenge"><span>你的挑战：</span>${b.challenge}</div>
+          </div>
+        </div>
+        <div class="brief-bottom"><div class="brief-note">${b.foot}</div><button id="briefStart" class="action-btn" type="button">${b.button}</button></div>
+      </article></section>`;
+    $('#briefStart').onclick=()=>{initLevel(level);requestImmersive()};
   }else if(screen==='play'){
-    const l=LEVELS[level];view.innerHTML=`<div class="hud"><div class="level-id"><div class="level-num">0${level+1}</div><div><div class="level-title">${l.name}</div><div class="level-sub">${l.genre} / ${l.tech}</div></div></div><div class="hud-center">${level===3?`<button id="raySfxToggle" class="ray-sfx-toggle" type="button">音效 ${raySoundEnabled?'开':'关'}</button>`:''}<div class="phase-tag" id="phaseTag">${l.low} · 模拟</div><div class="timer" id="timer">08</div></div></div><div class="progress"><div class="progress-bar" id="progressBar"></div></div><div class="mobile-game-tip">${level===0?'左下摇杆 · 躲避技能':level===1?'左下摇杆 · 控制准星':level===2?'左下移动 · 右侧瞄准射击':'轻点能量核心 · 连续拾取'}</div><div class="game-footer"><div class="instruction"><b>◈ ${l.prompt}</b><p>${phase==='low'?'第一阶段：基础画面效果':phase==='high'?'第二阶段：极限画面效果':'性能解锁中'}　·　点击「演示台」可手动切换档位</p></div><div class="game-meter"><span>${level===0?'成功躲避':level===1?'精准追踪积分':level===2?'平均命中反应':'能量核心 · 连击'}</span><strong id="meter">${level===2?'-- ms':'0'}</strong></div></div>`;
+    const l=LEVELS[level];view.innerHTML=`<div class="hud"><div class="level-id"><div class="level-num">0${level+1}</div><div><div class="level-title">${l.name}</div><div class="level-sub">${l.genre} / ${l.tech}</div></div></div><div class="hud-center">${level===3?`<button id="raySfxToggle" class="ray-sfx-toggle" type="button">音效 ${raySoundEnabled?'开':'关'}</button>`:''}<div class="phase-tag" id="phaseTag">${l.low} · 模拟</div><div class="timer" id="timer">08</div></div></div><div class="progress"><div class="progress-bar" id="progressBar"></div></div><div class="mobile-game-tip">${level===0?'左下摇杆 · 躲避技能':level===1?'左下摇杆 · 控制准星':level===2?'左下转动视角 · 右下开火':'轻点能量核心 · 连续拾取'}</div><div class="game-footer"><div class="instruction"><b>◈ ${l.prompt}</b><p>${phase==='low'?'第一阶段：基础画面效果':phase==='high'?'第二阶段：极限画面效果':'性能解锁中'}　·　点击「演示台」可手动切换档位</p></div><div class="game-meter"><span>${level===0?'成功躲避':level===1?'精准追踪积分':level===2?'平均命中反应':'能量核心 · 连击'}</span><strong id="meter">${level===2?'-- ms':'0'}</strong></div></div>`;
     if(level===3)$('#raySfxToggle').onclick=()=>{raySoundEnabled=!raySoundEnabled;$('#raySfxToggle').textContent='音效 '+(raySoundEnabled?'开':'关');};
   }else if(screen==='summary'){
     const l=LEVELS[level];
@@ -1622,7 +1770,7 @@
       <p class="hint">${level===0?'两档为便于感知的模拟效果，手动切换可在左侧观察指令轨迹和英雄的跟随差异。':level===3?'两档为概念模拟效果，手动切换可观察光追关闭与开启时宝物和环境层次的差异，不代表真实设备测试数据。':'本 Demo 为模拟效果，手动切换可观察不同档位的视觉变化，不代表设备真实测试数据。'}</p></div>
       <div class="panel-actions">${btn('↺ 重玩','replay')}${btn('首页','summaryHome')}${btn(level===3?'查看完整报告  →':'下一关  →','next','action-btn')}</div></section></div>`;
     $('#compareChips').querySelectorAll('[data-mode]').forEach(el=>el.onclick=()=>{stageData.manual=el.dataset.mode;phase=isHigh()?'high':'low';lastPaint=0;$('#compareChips').querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b===el))});
-    $('#replay').onclick=()=>initLevel(level);$('#next').onclick=()=>level===3?endScreen():initLevel(level+1);$('#summaryHome').onclick=home;
+    $('#replay').onclick=()=>initLevel(level);bindReliableSummaryNext();$('#summaryHome').onclick=home;
   }else if(screen==='end'){
     const sample=sampleReport;
     const scores=sample?[88,92,81,91]:results;
@@ -1660,7 +1808,7 @@
     $('#rankProvinceTab').onclick=()=>{rankRegion='province';syncRankView(avg,eligible)};
     $('#rankProvince').onchange=e=>{rankProvince=e.target.value;syncRankView(avg,eligible)};
     $('#shareResult').onclick=()=>{const toast=$('#rankToast');toast.classList.add('show');rankNoticeId++;const curr=rankNoticeId;setTimeout(()=>{if(rankNoticeId===curr&&toast.isConnected)toast.classList.remove('show')},2200)};
-    $('#again').onclick=()=>{results=[null,null,null,null];initLevel(0)};
+    $('#again').onclick=()=>{results=[null,null,null,null];initBriefing(0)};
     $('#endHome').onclick=home;
   }}
   async function requestImmersive(){
@@ -1683,7 +1831,7 @@
   });
   function openDemo(){demo=true;paused=true;$('#demoPanel').hidden=false;$('#demoOpen').setAttribute('aria-expanded','true');syncDemo();}
   function closeDemo(){demo=false;paused=false;$('#demoPanel').hidden=true;$('#demoOpen').setAttribute('aria-expanded','false');}
-  function syncDemo(){const d=$('#demoLevels');d.innerHTML=LEVELS.map((l,i)=>`<button class="ghost-btn" data-jump="${i}"><b>0${i+1} · ${l.name}</b><small>${l.tech}</small></button>`).join('');d.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{initLevel(Number(b.dataset.jump));closeDemo()});const modes=$('#demoModes');if(screen==='home'||screen==='end'){modes.innerHTML='<span class="hint">进入某一关后，可在这里切换模拟档位。</span>';}else{modes.innerHTML=LEVELS[level].values.map(v=>`<button class="chip ${currentValue()===v?'selected':''}" data-demo-mode="${v}">${v}</button>`).join('');modes.querySelectorAll('[data-demo-mode]').forEach(b=>b.onclick=()=>{stageData.manual=b.dataset.demoMode;phase=isHigh()?'high':'low';lastPaint=0;syncDemo()})}};
+  function syncDemo(){const d=$('#demoLevels');d.innerHTML=LEVELS.map((l,i)=>`<button class="ghost-btn" data-jump="${i}"><b>0${i+1} · ${l.name}</b><small>${l.tech}</small></button>`).join('');d.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{initBriefing(Number(b.dataset.jump));closeDemo()});const modes=$('#demoModes');if(screen==='home'||screen==='end'||screen==='briefing'){modes.innerHTML='<span class="hint">进入某一关后，可在这里切换模拟档位。</span>';}else{modes.innerHTML=LEVELS[level].values.map(v=>`<button class="chip ${currentValue()===v?'selected':''}" data-demo-mode="${v}">${v}</button>`).join('');modes.querySelectorAll('[data-demo-mode]').forEach(b=>b.onclick=()=>{stageData.manual=b.dataset.demoMode;phase=isHigh()?'high':'low';lastPaint=0;syncDemo()})}};
   $('#demoOpen').setAttribute('aria-expanded','false');
   $('#demoOpen').onclick=()=>{$('#demoPanel').hidden?openDemo():closeDemo()};
   $('#demoClose').onclick=closeDemo;$('#topHome').onclick=home;
@@ -1691,9 +1839,23 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#demoPanel').hidden)closeDemo();else if(screen!=='home')home();}if(e.key==='d'||e.key==='D'){$('#demoPanel').hidden?openDemo():closeDemo()}});
   function coords(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}}
   function handlePointer(e,move){if(screen!=='play'||paused||phase==='upgrade')return;const p=coords(e);const d=stageData;if(level===0){mobaPointer(e,p,move);}else if(level===1){if(phoneControls()){if(!move)fpsJoyDown(e,p);else fpsJoyMove(e,p);}else{d.touching=true;d.aim.x=clamp(p.x,.08,.92);d.aim.y=clamp(p.y,.23,.85);}}else if(level===3&&!move){d.clicks++;const target=rayPos();if(Math.hypot((p.x-target[0])*W,(p.y-target[1])*H)<Math.min(W,H)*.065){rayPickup(p.x,p.y);}else{rayMiss(p.x,p.y);}}}
-  function peekDown(e,p){const d=stageData;const joyX=W*.15,joyY=H*.79,joyR=joystickRadius(),fireX=.87,fireY=.77,fireR=.10;const dxJoy=p.x*W-joyX,dyJoy=p.y*H-joyY,dxFire=p.x-fireX,dyFire=p.y-fireY;if(Math.hypot(dxJoy,dyJoy)<=joyR*1.65&&d.joyPointer===null){d.joyPointer=e.pointerId;updatePeekJoy(p);return true;}if(Math.hypot(dxFire,dyFire)<=fireR&&d.firePointer===null){d.firePointer=e.pointerId;peekShoot();return true;}if(p.x>.52&&d.lookPointer===null){d.lookPointer=e.pointerId;d.lookX=p.x;d.lookY=p.y;return true;}return false;}
-  function peekMove(e,p){const d=stageData;if(d.joyPointer===e.pointerId){updatePeekJoy(p);return true;}if(d.lookPointer===e.pointerId){const dx=p.x-d.lookX,dy=p.y-d.lookY;d.lookX=p.x;d.lookY=p.y;d.player.yaw=clamp(d.player.yaw+dx*3.1,-1.25,1.25);d.player.pitch=clamp(d.player.pitch-dy*2.2,-.50,.53);lastPaint=0;return true;}return false;}
-  function peekUp(e){const d=stageData;if(d.joyPointer===e.pointerId){d.joyPointer=null;d.joyX=0;d.joyY=0;}if(d.lookPointer===e.pointerId)d.lookPointer=null;if(d.firePointer===e.pointerId)d.firePointer=null;}
+  function peekDown(e,p){
+    const d=stageData,joyX=W*.15,joyY=H*.79,joyR=joystickRadius();
+    const fireX=.87,fireY=.77,fireR=.10;
+    if(Math.hypot(p.x*W-joyX,p.y*H-joyY)<=joyR*1.65&&d.joyPointer===null){
+      d.joyPointer=e.pointerId;updatePeekJoy(p);return true;
+    }
+    if(Math.hypot(p.x-fireX,p.y-fireY)<=fireR&&d.firePointer===null){
+      d.firePointer=e.pointerId;peekShoot();return true;
+    }
+    // Right-half swipes do not rotate the camera anymore; right thumb = FIRE only.
+    return false;
+  }
+  function peekMove(e,p){
+    if(stageData.joyPointer===e.pointerId){updatePeekJoy(p);return true;}
+    return false;
+  }
+  function peekUp(e){const d=stageData;if(d.joyPointer===e.pointerId){d.joyPointer=null;d.joyX=0;d.joyY=0;}if(d.firePointer===e.pointerId)d.firePointer=null;}
   canvas.addEventListener('pointerdown',e=>{if(screen!=='play'||paused)return;try{canvas.setPointerCapture?.(e.pointerId)}catch(_){/* synthetic preview events need not capture */}const p=coords(e);if(level===2){peekDown(e,p);return;}handlePointer(e,false)});
   canvas.addEventListener('pointermove',e=>{const p=coords(e);if(level===2){peekMove(e,p);return;}if(level===0){if(stageData.mobaJoyPointer===e.pointerId)handlePointer(e,true);return;}if(level===1){if(stageData.fpsStickPointer===e.pointerId||!phoneControls())handlePointer(e,true);return;}if(stageData.touching)handlePointer(e,true)});
   const stop=(e)=>{if(level===2){peekUp(e);return;}if(level===0){mobaRelease(e);return;}if(level===1&&stageData?.fpsStickPointer!==null){fpsJoyRelease(e);return;}if(stageData&&stageData.touching)stageData.touching=false};canvas.addEventListener('pointerup',stop);canvas.addEventListener('pointercancel',stop);
