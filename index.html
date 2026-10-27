@@ -563,9 +563,14 @@
       foot:'本关光追和屏幕显示差异均为 H5 概念视觉演示，不是实际光线追踪渲染或屏幕亮度测量。'
     }
   ];
+  // The next screen can be mounted while the previous touch is still completing.
+  // Ignore the previous gesture's synthesized click until a fresh press starts on this page.
+  const BRIEFING_TAP_SHIELD_MS=650;
+  let briefingEnteredAt=0;
   function initBriefing(idx){
     level=idx;phase='low';comparison=false;paused=false;phaseElapsed=0;upElapsed=0;currentScore=null;
-    initData();$('#upgrade').hidden=true;screen='briefing';lastPaint=0;renderUI();
+    initData();$('#upgrade').hidden=true;screen='briefing';
+    briefingEnteredAt=performance.now();lastPaint=0;renderUI();
   }
   function initLevel(idx){level=idx;phase='low';comparison=false;paused=false;phaseElapsed=0;upElapsed=0;currentScore=null;initData();if(level===0)mobaResetRound();$('#upgrade').hidden=true;screen='play';renderUI();}
   function currentValue(){return LEVELS[level].values.find(v=>v===stageData.manual)|| (phase==='low'?LEVELS[level].low:LEVELS[level].high)}
@@ -1626,9 +1631,12 @@
       else initBriefing(destination);
     };
     button.addEventListener('pointerdown',event=>{
-      if(event.pointerType==='touch'||event.pointerType==='pen')
+      if(event.pointerType==='touch'||event.pointerType==='pen'){
         start={id:event.pointerId,x:event.clientX,y:event.clientY};
-    },{passive:true});
+        // Avoid a delayed compatibility click after replacing the entire view on pointerup.
+        if(event.cancelable)event.preventDefault();
+      }
+    },{passive:false});
     button.addEventListener('pointerup',event=>{
       if(!start||start.id!==event.pointerId)return;
       const delta=Math.hypot(event.clientX-start.x,event.clientY-start.y);
@@ -1637,6 +1645,38 @@
     },{passive:false});
     button.addEventListener('pointercancel',()=>{start=null;});
     button.addEventListener('click',navigate);
+  }
+
+  function bindReliableBriefStart(){
+    const button=$('#briefStart');
+    if(!button)return;
+    let pressed=false;
+    let cancelled=false;
+    const arm=event=>{
+      if(screen!=='briefing')return;
+      // A press that began during the preceding summary transition must not start the game.
+      if(performance.now()-briefingEnteredAt<BRIEFING_TAP_SHIELD_MS)return;
+      pressed=true;cancelled=false;
+    };
+    button.addEventListener('pointerdown',arm,{passive:true});
+    // Pointer Events are absent on some old iOS in-app browsers.
+    button.addEventListener('touchstart',arm,{passive:true});
+    button.addEventListener('pointercancel',()=>{cancelled=true;pressed=false});
+    button.addEventListener('touchcancel',()=>{cancelled=true;pressed=false});
+    button.addEventListener('click',event=>{
+      if(screen!=='briefing')return;
+      const fresh=performance.now()-briefingEnteredAt>=BRIEFING_TAP_SHIELD_MS;
+      // A keyboard or assistive-technology activation is a deliberate action without a pointerdown.
+      const keyboardActivation=event.isTrusted&&event.detail===0;
+      if(!fresh||cancelled||(!pressed&&!keyboardActivation)){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+      pressed=false;
+      initLevel(level);
+      requestImmersive();
+    });
   }
 
   function assessMobaTalent(d){
@@ -1719,7 +1759,7 @@
         </div>
         <div class="brief-bottom"><div class="brief-note">${b.foot}</div><button id="briefStart" class="action-btn" type="button">${b.button}</button></div>
       </article></section>`;
-    $('#briefStart').onclick=()=>{initLevel(level);requestImmersive()};
+    bindReliableBriefStart();
   }else if(screen==='play'){
     const l=LEVELS[level];view.innerHTML=`<div class="hud"><div class="level-id"><div class="level-num">0${level+1}</div><div><div class="level-title">${l.name}</div><div class="level-sub">${l.genre} / ${l.tech}</div></div></div><div class="hud-center">${level===3?`<button id="raySfxToggle" class="ray-sfx-toggle" type="button">音效 ${raySoundEnabled?'开':'关'}</button>`:''}<div class="phase-tag" id="phaseTag">${l.low} · 模拟</div><div class="timer" id="timer">08</div></div></div><div class="progress"><div class="progress-bar" id="progressBar"></div></div><div class="mobile-game-tip">${level===0?'左下摇杆 · 躲避技能':level===1?'左下摇杆 · 控制准星':level===2?'左下转动视角 · 右下开火':'轻点能量核心 · 连续拾取'}</div><div class="game-footer"><div class="instruction"><b>◈ ${l.prompt}</b><p>${phase==='low'?'第一阶段：基础画面效果':phase==='high'?'第二阶段：极限画面效果':'性能解锁中'}　·　点击「演示台」可手动切换档位</p></div><div class="game-meter"><span>${level===0?'成功躲避':level===1?'精准追踪积分':level===2?'平均命中反应':'能量核心 · 连击'}</span><strong id="meter">${level===2?'-- ms':'0'}</strong></div></div>`;
     if(level===3)$('#raySfxToggle').onclick=()=>{raySoundEnabled=!raySoundEnabled;$('#raySfxToggle').textContent='音效 '+(raySoundEnabled?'开':'关');};
